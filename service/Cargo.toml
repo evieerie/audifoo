@@ -4,4 +4,6 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cpal = { version="0.15.3" }
+launchctl = { version="0.3.2" }
+rodio = "0.20.1"
+lofty = "0.22.4"
