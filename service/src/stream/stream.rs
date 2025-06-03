@@ -3,9 +3,10 @@ use std::{
     io::BufReader,
     path::PathBuf,
     sync::{Arc, Mutex},
+    time::Duration,
 };
 
-use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
+use rodio::{source::SeekError, Decoder, OutputStream, OutputStreamHandle, Sink};
 
 pub struct Streamer {
     _stream: OutputStream,
@@ -49,10 +50,19 @@ impl Streamer {
         sink.skip_one();
     }
 
+    pub fn scrub(&self, pos: Duration) -> Result<(), SeekError> {
+        let sink = self.sink.lock().unwrap();
+        return sink.try_seek(pos);
+    }
+
+    pub fn set_volume(&self, volume: f32) {
+        let sink = self.sink.lock().unwrap();
+        sink.set_volume(volume);
+    }
+
     pub fn append_to_queue(&self, path: PathBuf) {
         let file = BufReader::new(File::open(path.clone()).unwrap());
         let source = Decoder::new(file).unwrap();
-
         let sink = self.sink.lock().unwrap();
 
         sink.skip_one();
